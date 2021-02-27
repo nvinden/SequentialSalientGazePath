@@ -21,10 +21,43 @@ class EyeTrackingDataset(torch.utils.data.Dataset):
         self.target_list = []
 
         for directory_name in directory_list:
-            for filename in glob.glob(root_directory + "/" + main_directory + "/" + directory_name + "/*.jpg"):
-                im = Image.open(filename)
+            filenames_im = glob.glob(root_directory + "/" + main_directory + "/" + directory_name + "/*.jpg")
+            filenames_sal = glob.glob(root_directory + "/" + main_directory + "/" + directory_name + "/Output/*.jpg")
+            filenames_tar = glob.glob(root_directory + "/" + "FIXATIONMAPS" + "/" + directory_name + "/*.jpg")
+            for (filename_im, filename_sal, filename_tar) in zip(filenames_im, filenames_sal, filenames_tar):
+                im = Image.open(filename_im).convert("RGB")
                 im = trans(im)
-                self.image_list.append(im)
+                if im.shape == torch.Size([3, 1080, 1920]):
+                    self.image_list.append(im)
+                else:
+                    continue
+
+                im = Image.open(filename_sal)
+                im = trans(im)
+                if im.shape == torch.Size([1, 141, 250]):
+                    self.salient_image_list.append(im)
+                else:
+                    self.image_list.pop(-1)
+                    continue
+                
+                im = Image.open(filename_tar)
+                im = trans(im)
+                if im.shape == torch.Size([1, 1080, 1920]):
+                    self.target_list.append(im)
+                else:
+                    self.salient_image_list.pop(-1)
+                    self.image_list.pop(-1)
+                    continue
+
+
+            '''
+            for filename in glob.glob(root_directory + "/" + main_directory + "/" + directory_name + "/*.jpg"):
+                im = Image.open(filename).convert("RGB")
+                im = trans(im)
+                if im.shape == torch.Size([3, 1080, 1920]):
+                    self.image_list.append(im)
+                else:
+                    continue
             for filename in glob.glob(root_directory + "/" + main_directory + "/" + directory_name + "/Output/*.jpg"):
                 im = Image.open(filename)
                 im = trans(im)
@@ -33,7 +66,7 @@ class EyeTrackingDataset(torch.utils.data.Dataset):
                 im = Image.open(filename)
                 im = trans(im)
                 self.target_list.append(im)
-        
+            '''
 
     def __len__(self):
         return len(self.image_list)

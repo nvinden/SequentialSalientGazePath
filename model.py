@@ -53,7 +53,7 @@ class HeatMapGenerator(nn.Module):
         self.lin1 = nn.Linear(20932, 10000)
         self.lin2 = nn.Linear(10000, 5184)
     
-    def forward(self, image_batch, salient_batch):
+    def forward(self, image_batch, salient_batch, train=True):
         image_batch.requires_grad_(False)
         salient_batch.requires_grad_(False)
 
@@ -69,8 +69,12 @@ class HeatMapGenerator(nn.Module):
         salient_raw = salient_raw.view(self.mini_batch_size, -1)
 
         to_linear = torch.cat((image, salient, salient_raw), dim=1)
-        out = self.lin1(to_linear)
-        out = self.lin2(out)
+
+        p = 0.3
+        out = F.dropout(to_linear, p, training=train)
+        out = self.lin1(F.ReLU(out))
+        out = F.dropout(out, p, training=train)
+        out = self.lin2(F.ReLU(out))
         out = out.view(self.mini_batch_size, 1, 54, 96)
 
         return out

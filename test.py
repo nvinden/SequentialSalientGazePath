@@ -26,7 +26,7 @@ model = HeatMapGenerator(mini_batch_size)
 model.load_state_dict(torch.load("/home/nvinden/ML/EyeTracking2/test.model"))
 
 for i_batch,sample_batched in enumerate(stimuli, 0):
-    out = model(sample_batched["image"], sample_batched["salient"])
+    out = model(sample_batched["image"], sample_batched["salient"], train=False)
     out = out.detach()
     print(out.shape)
     out = torch.squeeze(out, dim=0)

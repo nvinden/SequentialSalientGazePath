@@ -12,23 +12,26 @@ from PIL import Image
 import cv2
 from model import HeatMapGenerator 
 from EyeTrackingDataset import EyeTrackingDataset
+import faulthandler
+
+faulthandler.enable()
 
 #Hyperparameters
 mini_batch_size = 10
 learning_rate = 0.05
 weight_decay = 0.001
-num_epochs = 20
+num_epochs = 50
 
 #Batch parameters
-directory_list = ["Action", ]
+directory_list = ["Action", "Affective", "Art", "Indoor", "Inverted", "LowResolution", "Noisy", "Object", "OutdoorManMade", "OutdoorNatural", "Social"]
 root_directory = "/home/nvinden/ML/EyeTracking2/trainSet"
-
 
 stimuli_dataset = EyeTrackingDataset(root_directory, directory_list)
 
-stimuli = torch.utils.data.DataLoader(stimuli_dataset, batch_size=mini_batch_size, shuffle=True)
+stimuli = torch.utils.data.DataLoader(stimuli_dataset, batch_size=mini_batch_size, shuffle=True, drop_last=True)
 
 net = HeatMapGenerator(mini_batch_size)
+net.load_state_dict(torch.load("/home/nvinden/ML/EyeTracking2/test.model"))
 
 loss_function = nn.MSELoss()
 optimizer = optim.SGD(net.parameters(), lr=learning_rate, weight_decay=weight_decay)
