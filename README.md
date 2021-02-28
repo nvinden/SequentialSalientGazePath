@@ -2,7 +2,7 @@
 
 #### Introduction
 This project is a proof of concept for a model to generate sequential gaze points using salient images. As input, this algorithm takes in images of any size and uses a premade [salient
-image calculator](https://github.com/yhenon/pyimgsaliency) created by Jianming Zhang et Al. It is trained on a series of eye tracking point from the [POET dataset](http://calvin-vision.net/datasets/poet-dataset/)
+image calculator](https://github.com/yhenon/pyimgsaliency) created by Jianming Zhang et Al. It is trained on a series of eye tracking points from the [POET dataset](http://calvin-vision.net/datasets/poet-dataset/)
 created by Dim P. Papadopoulos et Al. This algorithm takes the best points from the dataset and uses them to train and test the model.
 
 ------------------------------------------------------------------
